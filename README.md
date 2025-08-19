@@ -7,6 +7,13 @@ This project is a web application that displays World Bank data on primary compl
 - `backend/`: The Django backend.
 - `frontend/`: The React frontend.
 
+## Live Demo
+
+- **Frontend:** [https://world-bank-dashboards.vercel.app/](https://world-bank-dashboards.vercel.app/)
+- **Backend:** [https://world-bank-dashboards.onrender.com](https://world-bank-dashboards.onrender.com)
+
+**Warning:** The backend is hosted on a free Render instance, which may spin down after a period of inactivity. If you are having trouble accessing the application, please visit the backend URL first to wake it up, then try accessing the frontend again.
+
 ## Setup Instructions
 
 First, clone the repository from GitHub:
