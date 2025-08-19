@@ -10,3 +10,4 @@ echo "Waiting for database to be ready..."
 sleep 150
 
 python manage.py migrate
+python manage.py create_test_user
