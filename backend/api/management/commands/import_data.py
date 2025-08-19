@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
 from api.models import DataPoint
+import numpy as np
 
 class Command(BaseCommand):
     help = 'Import World Bank data from CSV'
@@ -34,16 +35,15 @@ class Command(BaseCommand):
         
         # Iterate over the dataframe and create DataPoint objects
         for index, row in df_melted.iterrows():
-            # Ensure 'Primary Completion Rate' is a float, handling non-numeric values
-            try:
-                completion_rate = float(row['Primary Completion Rate'])
-            except (ValueError, TypeError):
-                continue  # Skip rows where conversion to float fails
+            completion_rate_val = row['Primary Completion Rate']
+            if pd.isna(completion_rate_val) or not np.isfinite(completion_rate_val):
+                completion_rate = None
+            else:
+                completion_rate = float(completion_rate_val)
 
             DataPoint.objects.create(
                 country=row['Country'],
                 year=row['Year'],
-                # Placeholder for gdp_per_capita and population
                 gdp_per_capita=0,  
                 population=0,
                 primary_completion_rate=completion_rate
