@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Select from 'react-select';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -13,7 +12,8 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import './Dashboard.css'; // Import the new CSS file
+import { getFilterOptions, getWorldData } from '../api';
+import './Dashboard.css';
 
 ChartJS.register(
   CategoryScale,
@@ -38,19 +38,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/filter-options/', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await getFilterOptions();
         const countryOptions = response.data.countries.map(c => ({ value: c, label: c }));
         setCountries(countryOptions);
         setYearRange(response.data.year_range);
         
-        // Set initial state after options are loaded
         setStartYear(response.data.year_range.min_year || 1900);
         setEndYear(response.data.year_range.max_year || 2020);
         
-        // Pre-select some countries for initial view
         const initialCountries = countryOptions.filter(c => ['United States', 'Brazil', 'India', 'China'].includes(c.value));
         setSelectedCountries(initialCountries);
 
@@ -64,21 +59,17 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (selectedCountries.length === 0 || !startYear || !endYear) {
-          setData([]); // Clear data if filters are not set
+          setData([]);
           return;
       }
       try {
-        const token = localStorage.getItem('token');
-        const params = new URLSearchParams({
+        const params = {
           start_year: startYear,
           end_year: endYear,
-        });
-        selectedCountries.forEach(c => params.append('countries[]', c.value));
+          'countries[]': selectedCountries.map(c => c.value),
+        };
 
-        const response = await axios.get('/api/world-data/', {
-          params,
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await getWorldData(params);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
