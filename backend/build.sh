@@ -11,3 +11,4 @@ sleep 150
 
 python manage.py migrate
 python manage.py create_test_user
+python manage.py import_data
